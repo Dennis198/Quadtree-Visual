@@ -1,0 +1,25 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+.vscode
+
+# dependencies
+quadtree-visual/node_modules
+quadtree-visual/.pnp
+quadtree-visual/.pnp.js
+
+# testing
+quadtree-visual/coverage
+
+# production
+quadtree-visual/build
+
+# misc
+quadtree-visual.DS_Store
+quadtree-visual.env.local
+quadtree-visual.env.development.local
+quadtree-visual.env.test.local
+quadtree-visual.env.production.local
+
+quadtree-visual/npm-debug.log*
+quadtree-visual/yarn-debug.log*
+quadtree-visual/yarn-error.log*
