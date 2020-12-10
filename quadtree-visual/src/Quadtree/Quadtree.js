@@ -67,8 +67,7 @@ const CANVAS_WIDTH=800;
 const CANVAS_HEIGHT=400;
 const CAPACITY_DEFAULT=4;
 const DRAW_MODE_ON_CLICK=0;
-const DRAW_MODE_ON_MOVE=1;
-const DRAW_MODE_ON_SEARCH=2;
+const DRAW_MODE_ON_SEARCH=1;
 const DRAW_MODE_NONE=-1;
 
 export default class Quadtree extends React.Component{
@@ -81,6 +80,7 @@ export default class Quadtree extends React.Component{
             pointsInSquareCount:0,
             capacity:CAPACITY_DEFAULT,
             query:false,
+            mouseDown: false,
             qtree:new QuadtreeConcrete(new Rectangle(CANVAS_WIDTH/2,CANVAS_HEIGHT/2,CANVAS_WIDTH/2,CANVAS_HEIGHT/2), CAPACITY_DEFAULT),
             addRandomPoints:true,
         }
@@ -98,14 +98,27 @@ export default class Quadtree extends React.Component{
     }
 
     //Draws a point on Canvas "2dplane" and save it in the array points
-    drawPointOnClick(e){
-        let newPoints = drawPointOnClick(e,this.state.points, this.state.classMode);
-        this.setState({points: newPoints});
-        let qtree = this.state.qtree;
-        qtree.insert(newPoints[newPoints.length-1]);
-        this.setState({qtree:qtree});
-        resetCanvas();
-        qtree.draw();
+    drawPointOnMove(e){
+      if(!this.state.mouseDown){
+        return;
+      }
+        this.onClickEvent(e);
+    }
+
+    //Draws a point on Canvas "2dplane" and save it in the array points
+    onClickEvent(e){
+      let newPoints = drawPointOnClick(e,this.state.points, this.state.classMode);
+      this.setState({points: newPoints});
+      let qtree = this.state.qtree;
+      qtree.insert(newPoints[newPoints.length-1]);
+      this.setState({qtree:qtree});
+      resetCanvas();
+      qtree.draw();
+    }
+
+    //Sets the Variable on Mouse Down to true/ Mouse UP to false
+    setsMouseIsDown(){
+        this.setState({mouseDown: !this.state.mouseDown})
     }
 
     //Add random Points
@@ -155,7 +168,6 @@ export default class Quadtree extends React.Component{
                 <h1>Quadtree</h1>
                 <Button color={!addRandomPoints ? "primary":"default"} variant="contained" onClick={addRandomPoints? () => this.addRandomPoints():() => this.stopADDRandomPoints()}>Draw Random Point</Button>
                 <Button color={drawMode===DRAW_MODE_ON_CLICK ? "primary":"default"} variant="contained" onClick={() => {this.setState({drawMode: DRAW_MODE_ON_CLICK, addRandomPoints:true})}}>Draw Points Click</Button>
-                <Button color={drawMode===DRAW_MODE_ON_MOVE ? "primary":"default"} variant="contained" onClick={() => {this.setState({drawMode: DRAW_MODE_ON_MOVE, addRandomPoints:true})}}>Draw Points Move</Button>
                 <Button color={drawMode===DRAW_MODE_ON_SEARCH ? "primary":"default"} variant="contained" onClick={() => {this.setState({drawMode: DRAW_MODE_ON_SEARCH, addRandomPoints:true})}}>Search Area</Button>
                 <Button variant="contained" onClick={() => this.reset()}>Reset</Button>
                 <div className="quadtree__labels">
@@ -168,16 +180,12 @@ export default class Quadtree extends React.Component{
                         />
                     </div>
                 </div>
-                {drawMode===0 ? 
-                    <canvas className="quadtree__canvas__2dplane" id="2d-plane" width={CANVAS_WIDTH} height={CANVAS_HEIGHT}
-                        onClick={ (e) => this.drawPointOnClick(e)}
-                    ></canvas>
-                    :
-                    <canvas className="quadtree__canvas__2dplane" id="2d-plane" width={CANVAS_WIDTH} height={CANVAS_HEIGHT}
-                        onMouseMoveCapture={drawMode===DRAW_MODE_ON_MOVE ? (e) => this.drawPointOnClick(e): drawMode!==DRAW_MODE_NONE ? (e) => this.drawSearchArea(e):null }
-                    ></canvas> 
-                }
-               
+                <canvas className="quadtree__canvas__2dplane" id="2d-plane" width={CANVAS_WIDTH} height={CANVAS_HEIGHT}
+                  onMouseDown={()=> this.setsMouseIsDown()}
+                  onMouseUp={()=> this.setsMouseIsDown()}
+                  onMouseMove={drawMode===DRAW_MODE_ON_CLICK?(e) => this.drawPointOnMove(e):(e) => this.drawSearchArea(e)}
+                  onClick={(e) => this.onClickEvent(e)}
+                ></canvas>               
             </div>
         );
     }
@@ -190,3 +198,9 @@ const createPoint=(x,y)=>{
         y:y,
     };
 }
+
+/**
+ *                  <canvas className="quadtree__canvas__2dplane" id="2d-plane" width={CANVAS_WIDTH} height={CANVAS_HEIGHT}
+                        onClick={ (e) => this.drawPointOnClick(e)}
+                    ></canvas>
+ */
