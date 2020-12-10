@@ -10,9 +10,6 @@ quadtree-visual/.pnp.js
 # testing
 quadtree-visual/coverage
 
-# production
-quadtree-visual/build
-
 # misc
 quadtree-visual.DS_Store
 quadtree-visual.env.local
