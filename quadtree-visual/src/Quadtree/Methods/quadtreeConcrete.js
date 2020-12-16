@@ -2,12 +2,15 @@
 Thise File Builds a Quadtree and handles querys
 */
 import Rectangle from "./rectangle";
+const MAX_DEPTH=14;
+
 export default class QuadtreeConcrete{
-    constructor(boundary, capacity, points=null) {
+    constructor(boundary, capacity, points=null, depth=0) {
         this.boundary=boundary;
         this.capacity=capacity;
         this.points=[]
         this.isDivided=false;
+        this.depth=depth;
         if(points)
         this.insertFather(points);
     }
@@ -28,7 +31,7 @@ export default class QuadtreeConcrete{
         if(!this.boundary.contains(point)){
             return false;
         } 
-        if(this.points.length<this.capacity && !this.isDivided){
+        if((this.points.length<this.capacity && !this.isDivided)||this.depth===MAX_DEPTH){
             this.points.push(point);
             return true;
         } else {
@@ -55,13 +58,13 @@ export default class QuadtreeConcrete{
         let w = this.boundary.w;
         let h = this.boundary.h;
         let nw = new Rectangle(x-w/2,y-h/2,w/2,h/2);
-        this.northwest = new QuadtreeConcrete(nw,this.capacity, this.points);
+        this.northwest = new QuadtreeConcrete(nw,this.capacity, this.points, this.depth+1);
         let ne = new Rectangle(x+w/2,y-h/2,w/2,h/2);
-        this.northeast = new QuadtreeConcrete(ne,this.capacity, this.points);
+        this.northeast = new QuadtreeConcrete(ne,this.capacity, this.points,this.depth+1);
         let sw = new Rectangle(x-w/2,y+h/2,w/2,h/2);
-        this.southwest = new QuadtreeConcrete(sw, this.capacity, this.points);
+        this.southwest = new QuadtreeConcrete(sw, this.capacity, this.points,this.depth+1);
         let se = new Rectangle(x+w/2,y+h/2,w/2,h/2);
-        this.southeast = new QuadtreeConcrete(se,this.capacity, this.points);
+        this.southeast = new QuadtreeConcrete(se,this.capacity, this.points,this.depth+1);
         this.isDivided=true;
         this.deletePointsIfSplit();
     }
