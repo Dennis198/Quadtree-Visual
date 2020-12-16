@@ -107,6 +107,7 @@ export default class Quadtree extends React.Component{
 
     //Draws a point on Canvas "2dplane" and save it in the array points
     onClickEvent(e){
+      if(this.state.drawMode===DRAW_MODE_ON_SEARCH) return; 
       let newPoints = drawPointOnClick(e,this.state.points, this.state.classMode);
       this.setState({points: newPoints});
       let qtree = this.state.qtree;
@@ -145,6 +146,7 @@ export default class Quadtree extends React.Component{
 
     //Draw the Search Area for the Quadtree
     drawSearchArea(e){
+        if(!this.state.addRandomPoints)return;
         drawSearchArea(e,this.state.qtree);
     }
 
